@@ -22,9 +22,6 @@ jobs:
     - name: Failed Build
       if: failure()
       run: echo "BUILD_STATE=failed" >> $GITHUB_ENV
-    - name: Successful Build
-      if: failure()
-      run: echo "BUILD_STATE=success" >> $GITHUB_ENV
     - name: Parse Jira Keys from Commit
       id: jira_keys
       if: always()
@@ -89,7 +86,7 @@ jobs:
         id: push_deployment_info_to_jira
         uses: HighwayThree/jira-upload-deployment-info@master
         with:
-          cloud-id: '${{ secrets.CLOUD_ID }}'
+          cloud-instance-base-url: '${{ secrets.cloud-instance-base-url }}'
           client-id: '${{ secrets.CLIENT_ID }}'
           client-secret: '${{ secrets.CLIENT_SECRET }}'
           deployment-sequence-number: '${{ github.run_id }}'
