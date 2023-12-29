@@ -22,6 +22,9 @@ jobs:
     - name: Failed Build
       if: failure()
       run: echo "BUILD_STATE=failed" >> $GITHUB_ENV
+    - name: Successful Build
+      if: failure()
+      run: echo "BUILD_STATE=success" >> $GITHUB_ENV
     - name: Parse Jira Keys from Commit
       id: jira_keys
       if: always()
