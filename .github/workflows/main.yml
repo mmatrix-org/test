@@ -42,7 +42,6 @@ jobs:
         pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
         build-number: ${{ github.run_number }}
         build-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
-        build-state: "${{ env.BUILD_STATE }}"
         build-url: '${{github.event.repository.url}}/actions/runs/${{github.run_id}}'
         update-sequence-number: '${{ github.run_id }}'
         last-updated: '${{github.event.head_commit.timestamp}}'
