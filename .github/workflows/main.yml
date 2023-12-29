@@ -6,11 +6,7 @@ on:
       - main
   pull_request:
     branches:
-      - bugfix/*
-      - feature/*
-      - hotfix/*
-      - release/*
-
+      - main
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
