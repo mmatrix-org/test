@@ -2,7 +2,7 @@
 
 # ALB Security Group: Edit to restrict access to the application
 resource "aws_security_group" "alb-sg" {
-  name        = "mpulse-backend-load-balancer-prod-green-security-group"
+  name        = "sqa"
   description = "controls access to the ALB"
   vpc_id      = aws_vpc.sqa-vpc.id
 
@@ -16,8 +16,8 @@ resource "aws_security_group" "alb-sg" {
   
   ingress {
     protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
+    from_port   = 80
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -31,7 +31,7 @@ resource "aws_security_group" "alb-sg" {
 
 # this security group for ecs - Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs_sg" {
-  name        = "prod--green-ecs-tasks-security-group"
+  name        = "sqa-ecs-tasks-security-group"
   description = "allow inbound access from the ALB only"
   vpc_id      = aws_vpc.sqa-vpc.id
 
@@ -43,8 +43,8 @@ resource "aws_security_group" "ecs_sg" {
   }
 ingress {
     protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
+    from_port       = 80
+    to_port         = 80
     security_groups = [aws_security_group.alb-sg.id]
   }
   egress {
