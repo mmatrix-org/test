@@ -26,10 +26,10 @@ resource "aws_alb_target_group" "myapp-tg" {
 #redirecting all incomming traffic from ALB to the target group
 resource "aws_alb_listener" "testapp" {
   load_balancer_arn = aws_alb.alb.id
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:us-east-1:933085737869:certificate/b46d1f01-6617-4ac0-a46f-dc592c35bbf8"
+  port              = 80
+  protocol          = "HTTP"
+  #ssl_policy        = "ELBSecurityPolicy-2016-08"
+  #certificate_arn   = "arn:aws:acm:us-east-1:933085737869:certificate/b46d1f01-6617-4ac0-a46f-dc592c35bbf8"
   #enable above 2 if you are using HTTPS listner and change protocal from HTTPS to HTTPS
   default_action {
     type             = "forward"
