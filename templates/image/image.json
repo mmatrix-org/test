@@ -8,7 +8,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/mpulsebackend-prod-blue",
+          "awslogs-group": "/ecs/test",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -16,7 +16,7 @@
 
       "environmentFiles": [
         {
-            "value": "arn:aws:s3:::mpulseenv/prod.env",
+            "value": "arn:aws:s3:::mpulseenv/dev.env",
             "type": "s3"
         }
     ],
