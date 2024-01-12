@@ -6,7 +6,7 @@ resource "aws_alb" "alb" {
 }
 
 resource "aws_alb_target_group" "myapp-tg" {
-  name        = "mpulse-backend-prod-tg-green"
+  name        = "mpulse-backend-sqa"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
