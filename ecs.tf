@@ -11,7 +11,7 @@ data "template_file" "testapp" {
 }
 
 resource "aws_ecs_task_definition" "test-def" {
-  family                   = "mpulse-backend-prod-green"
+  family                   = "mpulse-backend-sqa"
   execution_role_arn       = "arn:aws:iam::933085737869:role/ecsTaskExecutionRole"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "test-def" {
 }
 
 resource "aws_ecs_service" "test-service" {
-  name            = "mpulse-backend-prod-green-service"
+  name            = "mpulse-backend-sqa-green-service"
   cluster         = "sqa"
   task_definition = aws_ecs_task_definition.test-def.arn
   desired_count   = var.app_count
