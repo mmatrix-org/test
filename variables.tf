@@ -11,7 +11,7 @@ variable "az_count" {
 }
 
 variable "app_image" {
-  default     = "933085737869.dkr.ecr.us-east-1.amazonaws.com/mpulse-backend-prod-green:1.0.0"
+  default     = "933085737869.dkr.ecr.us-east-1.amazonaws.com/mpulse-backend-dev:f31c76369ac5c26747a8f73436263ddaf8c29ee2"
   description = "docker image to run in this ECS cluster"
 }
 
