@@ -31,7 +31,7 @@ resource "aws_security_group" "alb-sg" {
 
 # this security group for ecs - Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs_sg" {
-  name        = "sqa-ecs-tasks-security-group"
+  name        = "sqa-ecs"
   description = "allow inbound access from the ALB only"
   vpc_id      = aws_vpc.sqa-vpc.id
 
