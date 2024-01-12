@@ -1,6 +1,6 @@
 #in this template we are creating aws application laadbalancer and target group and alb http listener
 resource "aws_alb" "alb" {
-  name            = "mpulse-backend-prod-lb-green"
+  name            = "mpulse-backend-sqa"
   subnets         = aws_subnet.public.*.id
   security_groups = [ aws_security_group.alb-sg.id ]
 }
