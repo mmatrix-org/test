@@ -22,14 +22,14 @@ resource "aws_ecs_task_definition" "test-def" {
 
 resource "aws_ecs_service" "test-service" {
   name            = "mpulse-backend-prod-green-service"
-  cluster         = "prod"
+  cluster         = "sqa"
   task_definition = aws_ecs_task_definition.test-def.arn
   desired_count   = var.app_count
   launch_type     = "FARGATE"
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    subnets          = aws_subnet.private.*.id
+    subnets          = aws_subnet.public.*.id
     assign_public_ip = false
   }
 
