@@ -1,112 +1,45 @@
-name: CI
+name: 'Terraform'
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - bugfix/*
-      - feature/*
-      - hotfix/*
-      - release/*
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build_and_test:
+  terraform:
+    name: 'Terraform'
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Build and Test
-      shell: bash
-      run: |
-        echo "Build and Test as PROD "
-        echo "BUILD_STATE=successful" >> $GITHUB_ENV
-    - name: Failed Build
-      if: failure()
-      run: echo "BUILD_STATE=failed" >> $GITHUB_ENV
-    - name: Parse Jira Keys from Commit
-      id: jira_keys
-      if: always()
-      uses: HighwayThree/jira-extract-issue-keys@master
-      with:
-        is-pull-request: ${{ github.event_name == 'pull_request' }}
-        parse-all-commits: ${{ github.event_name == 'push' }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Push Build Info to Jira
-      if: steps.jira_keys.outputs.jira-keys != ''
-      id: push_build_info_to_jira
-      uses: HighwayThree/jira-upload-build-info@master
-      with:
-        cloud-instance-base-url: '${{ secrets.cloud_instance_base_url }}'
-        client-id: '${{ secrets.CLIENT_ID }}'
-        client-secret: '${{ secrets.CLIENT_SECRET }}'
-        pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
-        build-number: ${{ github.run_number }}
-        build-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
-        build-state: "${{ env.BUILD_STATE }}"
-        build-url: '${{github.event.repository.url}}/actions/runs/${{github.run_id}}'
-        update-sequence-number: '${{ github.run_id }}'
-        last-updated: '${{github.event.head_commit.timestamp}}'
-        issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
-        commit-id: '${{ github.sha }}'
-        repo-url: '${{ github.event.repository.url }}'
-        build-ref-url: '${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}'
-    - name: Confirm Jira Build Output
-      if: success()
-      run: |
-        echo "Jira Upload Build Info response: ${{ steps.push_build_info_to_jira.outputs.response }}"
+    environment: dev
 
-  deploy_to_test:
-    runs-on: ubuntu-latest
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
     steps:
-      - name: Deploy to Test
-        run: |
-          echo "Deploying to Test..."
-          echo "github.event_name: ${{github.event_name}}"
-          echo "github.ref: ${{github.ref}}"
-          echo "DEPLOY_STATE=successful"  >> $GITHUB_ENV
-      - name: Failed Deployment
-        if: failure()
-        run: echo "DEPLOY_STATE=failed" >> $GITHUB_ENV
-      - name: Parse Jira Keys from All Commits
-        id: jira_keys
-        if: always()
-        uses: HighwayThree/jira-extract-issue-keys@master
-        with:
-          is-pull-request: ${{ github.event_name == 'pull_request' }}
-          parse-all-commits: ${{ github.event_name == 'push' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Confirm Deploy State and Jira Key Values
-        if: always()
-        run: |
-          echo "DEPLOY_STATE: ${{env.DEPLOY_STATE}}"
-          echo "Jira Keys: ${{steps.jira_keys.outputs.jira-keys}}"
-      - name: Push Deployment Info to Jira
-        if: steps.jira_keys.outputs.jira-keys != ''
-        id: push_deployment_info_to_jira
-        uses: HighwayThree/jira-upload-deployment-info@master
-        with:
-          cloud-instance-base-url: '${{ secrets.cloud_instance_base_url }}'
-          client-id: '${{ secrets.CLIENT_ID }}'
-          client-secret: '${{ secrets.CLIENT_SECRET }}'
-          deployment-sequence-number: '${{ github.run_id }}'
-          update-sequence-number: '${{ github.run_id }}'
-          issue-keys: "${{ steps.jira_keys.outputs.jira-keys }}"
-          display-name: "Deployment number asdf"
-          url: "${{github.event.repository.url}}/actions/runs/${{github.run_id}}"
-          description: "Test Deployment"
-          last-updated: '${{github.event.head_commit.timestamp}}'
-          label: 'Test Deployment Label'
-          state: '${{env.DEPLOY_STATE}}'
-          pipeline-id: '${{ github.repository }} ${{ github.workflow }}'
-          pipeline-display-name: 'Workflow: ${{ github.workflow }} (#${{ github.run_number }})'
-          pipeline-url: '${{github.event.repository.url}}/actions/runs/${{github.run_id}}'
-          environment-id: 'Test'
-          environment-display-name: 'Test'
-          environment-type: 'testing'
-      - name: Confirm Jira Deploy Output
-        if: success()
-        run: |
-          echo "Jira Upload Deploy Info response: ${{steps.push_deployment_info_to_jira.outputs.response}}"
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      # if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
