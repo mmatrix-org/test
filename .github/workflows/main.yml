@@ -10,5 +10,5 @@ jobs:
         uses: actions/checkout@v2
       - name: Run Your Job
         run: |
-          # Your job steps go here
-          echo " this is working "
+              echo "Received payload: ${{ toJson(github.event.client_payload) }}"
+    
